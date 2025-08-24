@@ -5,11 +5,14 @@ A real-time fraud detection system that ingests payment transactions, applies ML
 ## Features
 
 - **Real-time Transaction Processing**: Handle 100+ transactions per second with <200ms latency
-- **ML-Based Fraud Detection**: Random Forest model with >90% accuracy
-- **Feature Engineering**: Real-time velocity, geographic, and behavioral features
-- **Alert System**: Configurable risk thresholds with email/Slack notifications
-- **Monitoring Dashboard**: Real-time metrics and transaction explorer
-- **Data Simulator**: Generate realistic transaction data for testing
+- **ML-Based Fraud Detection**: Random Forest and XGBoost models with >90% accuracy
+- **Feature Engineering**: Real-time velocity, geographic, temporal, and behavioral features
+- **Alert System**: Configurable risk thresholds with email/Slack/Discord notifications
+- **Monitoring Dashboard**: Real-time metrics, interactive charts, and transaction explorer
+- **Data Simulator**: Generate realistic transaction data with fraud patterns
+- **Configuration Management**: YAML-based configuration with environment variable overrides
+- **Jupyter Notebooks**: Data exploration and model training notebooks
+- **Demo Script**: Complete pipeline demonstration with metrics
 
 ## Architecture
 
@@ -34,8 +37,8 @@ A real-time fraud detection system that ingests payment transactions, applies ML
 
 - Docker and Docker Compose
 - Python 3.8+
-- Kafka
-- Redis
+- Kafka (provided via Docker)
+- Redis (provided via Docker)
 
 ### Installation
 
@@ -83,6 +86,23 @@ python scripts/start_pipeline.py
 http://localhost:5000
 ```
 
+### Alternative: Automated Setup
+
+Use the setup script for a complete automated installation:
+
+```bash
+chmod +x scripts/setup.sh
+./scripts/setup.sh
+```
+
+### Demo Mode
+
+Run a complete demonstration of the pipeline:
+
+```bash
+python scripts/demo.py --duration 10 --tps 20
+```
+
 ## Project Structure
 
 ```
@@ -93,11 +113,30 @@ fraud-detection-pipeline/
 ├── .env.example             # Environment variables template
 ├── .gitignore               # Git ignore rules
 ├── data/                    # Sample data and configurations
+│   └── feature_definitions.json
 ├── src/                     # Core application code
+│   ├── models/              # Data models
+│   ├── ingestion/           # Data ingestion and simulation
+│   ├── processing/          # Feature engineering and ML pipeline
+│   ├── ml/                  # Model training and serving
+│   └── alerting/            # Alert management
 ├── dashboard/               # Web dashboard
+│   ├── app.py               # Flask application
+│   ├── api/                 # API endpoints
+│   ├── templates/           # HTML templates
+│   └── static/              # CSS/JS assets
 ├── config/                  # Configuration files
+│   ├── pipeline_config.yaml # Main configuration
+│   └── config_loader.py     # Configuration management
 ├── scripts/                 # Utility scripts
-└── notebooks/               # Jupyter notebooks
+│   ├── setup.sh             # Automated setup
+│   ├── train_model.py       # Model training
+│   ├── start_pipeline.py    # Pipeline startup
+│   └── demo.py              # Demo showcase
+├── notebooks/               # Jupyter notebooks
+│   ├── 01_data_exploration.ipynb
+│   └── 02_model_training.ipynb
+└── models/                  # Trained model storage
 ```
 
 ## Configuration
@@ -109,7 +148,11 @@ fraud-detection-pipeline/
 - `REDIS_PORT`: Redis server port
 - `MODEL_PATH`: Path to trained ML model
 - `ALERT_EMAIL`: Email for fraud alerts
-- `SLACK_WEBHOOK`: Slack webhook URL
+- `SLACK_WEBHOOK_URL`: Slack webhook URL
+- `DISCORD_WEBHOOK_URL`: Discord webhook URL
+- `RISK_THRESHOLD_HIGH/MEDIUM/LOW`: Risk thresholds
+- `DASHBOARD_HOST/PORT`: Dashboard configuration
+- `SIMULATOR_TPS/FRAUD_RATE`: Data simulator settings
 
 ### Risk Thresholds
 
@@ -121,10 +164,14 @@ fraud-detection-pipeline/
 
 ### Dashboard API
 
-- `GET /api/metrics` - Real-time metrics
-- `GET /api/transactions` - Transaction list
-- `GET /api/alerts` - Alert list
-- `POST /api/transactions/{id}/review` - Review transaction
+- `GET /api/metrics` - Real-time system metrics
+- `GET /api/transactions` - Transaction list with filtering
+- `GET /api/transactions/{id}` - Specific transaction details
+- `GET /api/alerts` - Alert list with filtering
+- `POST /api/alerts/{id}/acknowledge` - Acknowledge alert
+- `POST /api/alerts/{id}/resolve` - Resolve alert
+- `GET /api/health` - System health check
+- `GET /api/statistics` - System statistics
 
 ## Monitoring
 
@@ -135,32 +182,56 @@ fraud-detection-pipeline/
 - False positive rate
 - Model inference latency
 - Alert volume
+- System health status
 
 ### Alerts
 
 - High-risk transaction notifications
-- Model performance degradation
-- System health monitoring
+- Configurable risk thresholds
+- Email, Slack, and Discord notifications
+- Alert lifecycle management (acknowledge, resolve)
 
 ## Development
 
-### Running Tests
+### Jupyter Notebooks
+
+Explore data and train models interactively:
 
 ```bash
-python -m pytest tests/
+cd notebooks
+jupyter notebook
 ```
 
-### Code Quality
+Available notebooks:
+
+- `01_data_exploration.ipynb` - Data analysis and visualization
+- `02_model_training.ipynb` - Model training and evaluation
+
+### Model Training
+
+Train models with various options:
 
 ```bash
-flake8 src/
-black src/
+# Basic training
+python scripts/train_model.py
+
+# With hyperparameter tuning
+python scripts/train_model.py --tune-hyperparameters
+
+# Custom parameters
+python scripts/train_model.py --transactions 20000 --fraud-rate 0.03 --model-type xgboost
 ```
 
-### Model Retraining
+### Configuration Management
 
-```bash
-python scripts/train_model.py --retrain
+The system uses YAML-based configuration with environment variable overrides:
+
+```python
+from config.config_loader import load_config
+
+config = load_config()
+kafka_config = config.get_kafka_config()
+redis_config = config.get_redis_config()
 ```
 
 ## Performance
@@ -168,15 +239,49 @@ python scripts/train_model.py --retrain
 - **Throughput**: 100+ TPS
 - **Latency**: <200ms end-to-end
 - **Accuracy**: >90% fraud detection
-- **Availability**: 99.9% uptime
+- **Availability**: 99.9% uptime target
+
+## Infrastructure
+
+### Docker Services
+
+- **Kafka**: Message streaming platform
+- **Redis**: Feature store and caching
+- **Kafka-UI**: Web interface for Kafka management
+- **Redis Commander**: Web interface for Redis management
+
+### Monitoring Tools
+
+- **Kafka-UI**: Available at http://localhost:8080
+- **Redis Commander**: Available at http://localhost:8081
+- **Dashboard**: Available at http://localhost:5000
 
 ## Contributing
 
 1. Fork the repository
 2. Create a feature branch
 3. Make your changes
-4. Add tests
+4. Add tests (when test framework is implemented)
 5. Submit a pull request
+
+## Future Enhancements
+
+### Planned Features
+
+- **Testing Framework**: Unit and integration tests
+- **Code Quality Tools**: Automated linting and formatting
+- **Transaction Review API**: Manual review workflow
+- **Model Retraining Pipeline**: Automated model updates
+- **Advanced Analytics**: More detailed fraud pattern analysis
+- **Multi-tenancy**: Support for multiple organizations
+- **API Documentation**: OpenAPI/Swagger documentation
+
+### Performance Improvements
+
+- **Horizontal Scaling**: Multi-instance deployment
+- **Caching Optimization**: Enhanced Redis caching strategies
+- **Stream Processing**: Apache Flink integration
+- **Real-time Analytics**: Advanced streaming analytics
 
 ## License
 
