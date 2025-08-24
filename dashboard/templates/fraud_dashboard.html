@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fraud Detection Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🚨 Fraud Detection Dashboard</h1>
+            <div class="status-indicator">
+                <span id="system-status" class="status-badge">Loading...</span>
+            </div>
+        </header>
+
+        <div class="metrics-grid">
+            <div class="metric-card">
+                <h3>Transaction Volume</h3>
+                <div class="metric-value" id="transaction-volume">-</div>
+                <div class="metric-label">transactions/sec</div>
+            </div>
+            
+            <div class="metric-card">
+                <h3>Fraud Rate</h3>
+                <div class="metric-value" id="fraud-rate">-</div>
+                <div class="metric-label">% flagged</div>
+            </div>
+            
+            <div class="metric-card">
+                <h3>Pending Alerts</h3>
+                <div class="metric-value" id="pending-alerts">-</div>
+                <div class="metric-label">alerts</div>
+            </div>
+            
+            <div class="metric-card">
+                <h3>System Health</h3>
+                <div class="metric-value" id="system-health">-</div>
+                <div class="metric-label">status</div>
+            </div>
+        </div>
+
+        <div class="charts-section">
+            <div class="chart-container">
+                <h3>Fraud Score Distribution</h3>
+                <canvas id="fraud-distribution-chart"></canvas>
+            </div>
+            
+            <div class="chart-container">
+                <h3>Alert Priority Distribution</h3>
+                <canvas id="alert-priority-chart"></canvas>
+            </div>
+        </div>
+
+        <div class="alerts-section">
+            <h3>Recent Alerts</h3>
+            <div class="alerts-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Alert ID</th>
+                            <th>Transaction ID</th>
+                            <th>User ID</th>
+                            <th>Risk Level</th>
+                            <th>Fraud Score</th>
+                            <th>Created</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="alerts-table-body">
+                        <tr>
+                            <td colspan="7">Loading alerts...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="transactions-section">
+            <h3>Recent Transactions</h3>
+            <div class="transactions-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Transaction ID</th>
+                            <th>User ID</th>
+                            <th>Amount</th>
+                            <th>Merchant</th>
+                            <th>Fraud Score</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="transactions-table-body">
+                        <tr>
+                            <td colspan="6">Loading transactions...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+</body>
+</html>

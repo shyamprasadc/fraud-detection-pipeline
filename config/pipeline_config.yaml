@@ -1,0 +1,105 @@
+# Fraud Detection Pipeline Configuration
+
+# Kafka Configuration
+kafka:
+  bootstrap_servers: "localhost:9092"
+  topic_transactions: "payment-transactions"
+  topic_alerts: "fraud-alerts"
+  consumer_group: "fraud-detection-group"
+  producer_config:
+    acks: "all"
+    retries: 3
+    linger_ms: 10
+    buffer_memory: 33554432
+    compression_type: "gzip"
+
+# Redis Configuration
+redis:
+  host: "localhost"
+  port: 6379
+  db: 0
+  password: null
+  cache_ttl: 3600
+
+# ML Model Configuration
+model:
+  type: "random_forest"  # random_forest, xgboost
+  path: "models/fraud_detection_model.pkl"
+  version: "v1.0"
+  test_size: 0.2
+  random_state: 42
+  cv_folds: 5
+  hyperparameter_tuning: false
+
+# Feature Engineering Configuration
+features:
+  velocity_windows: [1, 24]  # hours
+  amount_features: true
+  geographic_features: true
+  temporal_features: true
+  merchant_features: true
+  behavioral_features: true
+
+# Risk Thresholds
+risk_thresholds:
+  low: 0.3
+  medium: 0.5
+  high: 0.8
+  critical: 0.9
+
+# Alert Configuration
+alerts:
+  ttl: 86400  # 24 hours
+  max_per_user: 10
+  deduplication_window: 300  # 5 minutes
+  notification_channels:
+    - type: "email"
+      config:
+        smtp_server: "smtp.gmail.com"
+        smtp_port: 587
+        username: "fraud-alerts@company.com"
+    - type: "slack"
+      config:
+        webhook_url: "https://hooks.slack.com/services/YOUR/SLACK/WEBHOOK"
+    - type: "webhook"
+      config:
+        url: "https://your-webhook-endpoint.com/fraud-alerts"
+
+# Processing Configuration
+processing:
+  max_workers: 4
+  batch_size: 100
+  batch_timeout: 5.0
+  max_concurrent_transactions: 1000
+  model_inference_timeout: 100
+
+# Data Simulator Configuration
+simulator:
+  tps: 50
+  fraud_rate: 0.05
+  duration_hours: 24
+  user_count: 100
+  merchant_count: 15
+
+# Dashboard Configuration
+dashboard:
+  host: "0.0.0.0"
+  port: 5000
+  debug: false
+  update_interval: 5000  # milliseconds
+
+# Logging Configuration
+logging:
+  level: "INFO"
+  format: "json"
+  file: "logs/pipeline.log"
+  max_size: "100MB"
+  backup_count: 5
+
+# Performance Targets
+performance:
+  target_tps: 100
+  max_latency_ms: 200
+  min_precision: 0.95
+  min_recall: 0.90
+  target_uptime: 0.999

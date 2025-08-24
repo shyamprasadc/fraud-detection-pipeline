@@ -1,0 +1,162 @@
+{
+  "features": {
+    "txn_count_1h": {
+      "description": "Number of transactions in the last hour",
+      "type": "velocity",
+      "calculation": "count of transactions in 1-hour sliding window",
+      "importance": "high",
+      "expected_range": [0, 50]
+    },
+    "txn_count_24h": {
+      "description": "Number of transactions in the last 24 hours",
+      "type": "velocity",
+      "calculation": "count of transactions in 24-hour sliding window",
+      "importance": "high",
+      "expected_range": [0, 200]
+    },
+    "amount_sum_1h": {
+      "description": "Total amount spent in the last hour",
+      "type": "velocity",
+      "calculation": "sum of transaction amounts in 1-hour sliding window",
+      "importance": "medium",
+      "expected_range": [0, 10000]
+    },
+    "amount_sum_24h": {
+      "description": "Total amount spent in the last 24 hours",
+      "type": "velocity",
+      "calculation": "sum of transaction amounts in 24-hour sliding window",
+      "importance": "medium",
+      "expected_range": [0, 50000]
+    },
+    "amount_zscore": {
+      "description": "Z-score of current transaction amount vs user's historical average",
+      "type": "amount",
+      "calculation": "(amount - user_avg) / user_std",
+      "importance": "high",
+      "expected_range": [-5, 5]
+    },
+    "amount_percentile": {
+      "description": "Percentile of current amount vs user's historical amounts",
+      "type": "amount",
+      "calculation": "percentile rank of current amount",
+      "importance": "medium",
+      "expected_range": [0, 1]
+    },
+    "amount_deviation": {
+      "description": "Absolute deviation from user's average transaction amount",
+      "type": "amount",
+      "calculation": "|amount - user_avg| / user_avg",
+      "importance": "medium",
+      "expected_range": [0, 10]
+    },
+    "distance_from_home": {
+      "description": "Distance in kilometers from user's home location",
+      "type": "geographic",
+      "calculation": "Haversine distance from home coordinates",
+      "importance": "high",
+      "expected_range": [0, 10000]
+    },
+    "new_merchant": {
+      "description": "Whether this is a new merchant for the user",
+      "type": "geographic",
+      "calculation": "binary flag (0/1)",
+      "importance": "medium",
+      "expected_range": [0, 1]
+    },
+    "new_location": {
+      "description": "Whether this is a new location for the user",
+      "type": "geographic",
+      "calculation": "binary flag (0/1)",
+      "importance": "medium",
+      "expected_range": [0, 1]
+    },
+    "hour_of_day": {
+      "description": "Hour of day when transaction occurred",
+      "type": "temporal",
+      "calculation": "hour (0-23)",
+      "importance": "low",
+      "expected_range": [0, 23]
+    },
+    "is_weekend": {
+      "description": "Whether transaction occurred on weekend",
+      "type": "temporal",
+      "calculation": "binary flag (0/1)",
+      "importance": "low",
+      "expected_range": [0, 1]
+    },
+    "is_business_hours": {
+      "description": "Whether transaction occurred during business hours (9-17)",
+      "type": "temporal",
+      "calculation": "binary flag (0/1)",
+      "importance": "low",
+      "expected_range": [0, 1]
+    },
+    "merchant_risk_score": {
+      "description": "Pre-computed risk score for the merchant",
+      "type": "merchant",
+      "calculation": "historical fraud rate for merchant",
+      "importance": "high",
+      "expected_range": [0, 1]
+    },
+    "merchant_category_risk": {
+      "description": "Risk score for merchant category",
+      "type": "merchant",
+      "calculation": "historical fraud rate for category",
+      "importance": "medium",
+      "expected_range": [0, 1]
+    },
+    "user_avg_amount": {
+      "description": "User's average transaction amount",
+      "type": "behavioral",
+      "calculation": "moving average of user's transaction amounts",
+      "importance": "medium",
+      "expected_range": [1, 10000]
+    },
+    "user_transaction_frequency": {
+      "description": "User's typical transaction frequency (per day)",
+      "type": "behavioral",
+      "calculation": "average daily transaction count",
+      "importance": "medium",
+      "expected_range": [0, 20]
+    },
+    "user_preferred_merchants_match": {
+      "description": "Whether transaction is with user's preferred merchants",
+      "type": "behavioral",
+      "calculation": "binary flag (0/1)",
+      "importance": "low",
+      "expected_range": [0, 1]
+    }
+  },
+  "feature_groups": {
+    "velocity_features": [
+      "txn_count_1h",
+      "txn_count_24h",
+      "amount_sum_1h",
+      "amount_sum_24h"
+    ],
+    "amount_features": [
+      "amount_zscore",
+      "amount_percentile",
+      "amount_deviation"
+    ],
+    "geographic_features": [
+      "distance_from_home",
+      "new_merchant",
+      "new_location"
+    ],
+    "temporal_features": ["hour_of_day", "is_weekend", "is_business_hours"],
+    "merchant_features": ["merchant_risk_score", "merchant_category_risk"],
+    "behavioral_features": [
+      "user_avg_amount",
+      "user_transaction_frequency",
+      "user_preferred_merchants_match"
+    ]
+  },
+  "feature_importance_weights": {
+    "high": 1.0,
+    "medium": 0.7,
+    "low": 0.3
+  },
+  "version": "1.0",
+  "last_updated": "2024-01-01T00:00:00Z"
+}
